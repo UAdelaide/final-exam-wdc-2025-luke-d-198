@@ -1,12 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Express</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+  <title>Dog of the Day</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+    #app {
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #357abd;
+    }
+    img {
+      width: 100%;
+      border-radius: 8px;
+      max-height: 100%;
+      height: auto;
+    }
+    .img-box {
+      height: 600px;
+      padding-bottom: 10px;
+    }
+    .info {
+      text-align: center;
+    }
+    .spacer {
+      height: 300px;
+    }
+    .instructions {
+      text-align: center;
+      background-color: lightyellow;
+    }
+  </style>
 </head>
 
 <body>
-    <h1>Express</h1>
-    <p>Welcome to Express</p>
+<div id="app">
+  <h1>Dog of the Day</h1>
+  <p class="info">
+    Name: Fluffy <br>
+    Age: 2 <br>
+    Breed: Unknown <br>
+    Mood: Happy
+  </p>
+  <div class="spacer"></div>
+  <div class="img-box">
+    <img id="dog-image" alt="" :src="dogImage" v-if="show">
+  </div>
+  <p class="instructions">
+    Click below to view the image of todays dog of the day! <br>
+    Note: the image will only show after the button has been clicked! <br>
+    Make sure to read the dog information before viewing the dog! <br>
+  </p>
+  <button @click="showDog" type="button">{{ !show ? 'Reveal Dog' : 'Hide Dog' }}</button>
+</div>
+<script>
+  const { createApp } = Vue;
+  createApp({
+    data() {
+      return {
+        dogImage: '',
+        show: false,
+      };
+    },
+    async mounted() {
+      this.getDog();
+    },
+    methods: {
+      async getDog() {
+        const res = await fetch('https://dog.ceo/api/breeds/image/random');
+        const data = await res.json();
+        this.dogImage = data.message;
+      },
+      showDog() {
+        this.show = !this.show;
+      }
+    }
+  }).mount('#app');
+</script>
 </body>
 </html>
