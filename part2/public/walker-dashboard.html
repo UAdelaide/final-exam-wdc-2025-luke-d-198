@@ -46,7 +46,17 @@
         const walks = ref([]);
         const message = ref('');
         const error = ref('');
-        const user = 3;
+        const user = ref('');
+
+        async function getCurrentUser() {
+          try {
+            const res = await fetch('api/users/me');
+            const data = await res.json();
+            user.user_id = data.user_id;
+          } catch (err) {
+            error.value = err.message;
+          }
+        }
 
         async function loadWalkRequests() {
           try {
@@ -60,10 +70,11 @@
 
         async function applyToWalk(requestId) {
           try {
+            console.log(this.user);
             const res = await fetch(`/api/walks/${requestId}/apply`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ walker_id: user })
+              body: JSON.stringify({ walker_id: user.user_id })
             });
             const result = await res.json();
 
@@ -87,6 +98,7 @@
         }
 
         onMounted(() => {
+          getCurrentUser();
           loadWalkRequests();
         });
 

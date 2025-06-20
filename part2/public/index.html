@@ -26,6 +26,29 @@
 
       <button type="submit" class="btn btn-primary">Log In</button>
     </form>
+
+    <div id="dog-table">
+      <br>
+      <h2>All Registered Dogs</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Dog ID</th>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Owner ID</th>
+            <th>Photo</th>
+          </tr>
+        </thead>
+        <tr v-for="dog in dogs" class="h-10">
+          <td>{{ dog.dog_id }}</td>
+          <td>{{ dog.name }}</td>
+          <td>{{ dog.size }}</td>
+          <td>{{ dog.owner_id }}</td>
+          <td><img alt="Dog Photo" :src="dog.image" class="image-fluid" style="max-width: 100; max-height: 80px; object-fit: cover;"></td>
+        </tr>
+      </table>
+    </div>
   </div>
 
   <script>
@@ -36,6 +59,7 @@
           message: 'Welcome to the Dog Walking Service!',
           username: '',
           password: '',
+          dogs: [],
         };
       },
       methods: {
@@ -59,7 +83,23 @@
             this.password = '';
             alert('incorrect email or password');
           }
+        },
+        async getDogs() {
+          const res = await fetch('/api/dogs/table');
+          const data = await res.json();
+          const with_imgs = await Promise.all(data.map(async dog => {
+            const imgRes = await fetch('https://dog.ceo/api/breeds/image/random');
+            const imgData = await imgRes.json();
+            return {
+              ...dog,
+              image: imgData.message,
+            };
+          }));
+          return with_imgs;
         }
+      },
+      async mounted() {
+        this.dogs = await this.getDogs();
       }
     }).mount('#app');
   </script>

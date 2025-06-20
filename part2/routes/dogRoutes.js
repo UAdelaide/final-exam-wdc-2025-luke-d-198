@@ -18,4 +18,17 @@ router.get('/', async (req, res) => {
 });
 
 
+// get all dog entries in a table
+router.get('/table', async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT * FROM Dogs
+    `);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get dogs' });
+  }
+});
+
+
 module.exports = router;
